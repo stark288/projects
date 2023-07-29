@@ -1,0 +1,66 @@
+/* CSS styling for the chat dialog */
+#chatbox {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    width: 450px;
+    height: 500px;
+    border: 1px solid #ccc;
+    overflow-y: scroll;
+    padding: 10px;
+    background-image: url(/static/imgs/vbot_bg_336x400.png);
+    background-repeat: no-repeat;
+    background-size: 100%;
+}
+
+#chatbox p {
+    margin: 5px;
+}
+
+#userInput {
+    margin-top: 20px;
+    width: 50%;
+    padding: 5px;
+}
+
+#submitButton {
+    margin-left: 30px;
+    margin-top: 5px;
+    width: 10%;
+    height: 500%;
+    padding: 1px;
+    color: black;
+    border-radius: 120%;
+    border-style: none;
+}
+
+#microphoneButton {
+    margin-left: 10px;
+    margin-top: 5px;
+    width: 10%;
+    height: 500%;
+    padding: 1px;
+    color: black;
+    border-radius: 120%;
+    border-style: none;
+}
+
+.input-1 {
+    border-style: none;
+    font-family: 'PT Sans';
+    margin-bottom: 15px;
+}
+
+p {
+    font-family: 'PT Sans';
+    font-weight: bold;
+    color: white;
+}
+
+body {
+    background-image: url('/static/imgs/V BOT (2).png');
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+    background-size: 100% 100%;
+    background-position: 300;
+}

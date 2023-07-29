@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <title>Find Nearby Blood Banks</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Comfortaa:wght@600&display=swap" rel="stylesheet">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=PT+Sans+Caption:wght@700&display=swap" rel="stylesheet">
+  <style>
+    #map {
+      height: 500px;
+      width: 1520px;
+      border-radius: 10%;
+    }
+
+    body {
+      background-image: url("https://media.istockphoto.com/id/1341437690/photo/blue-wave-conection-dots-and-lines-abstract-technology-background-science-background-big-data.jpg?b=1&s=170667a&w=0&k=20&c=T6NsBDnryyZj0Ni-BOO7T0OfbpMGre0uBH5TCN8yBfI=");
+      background-repeat: no-repeat;
+      background-size: cover;
+    }
+
+    #places-list {
+      font-family: Arial, sans-serif;
+      font-size: 14px;
+      margin: 10px;
+      padding: 0;
+      list-style-type: none;
+    }
+
+    #places-list li {
+      margin-bottom: 10px;
+    }
+
+    #places-list h2 {
+      font-size: 18px;
+      margin: 0;
+      padding: 0;
+    }
+
+    #places-list p {
+      margin: 0;
+      padding: 0;
+    }
+
+    h2 {
+      color: #ffff;
+      font-family: 'Comfortaa';
+      font-weight: bolder;
+      line-height: 200%;
+      font-size: xx-large;
+    }
+
+    h1{
+      color: #ffff;
+      font-family: 'PT Sans Caption';
+      font-weight: bolder;
+      line-height: 200%;
+      font-size: xx-large;
+      text-align: center;
+    }
+
+    p {
+      color: #ffff;
+      font-family: Verdana, Geneva, Tahoma, sans-serif;
+      /* font-weight: bold; */
+      line-height: 205%;
+      font-size: larger;
+    }
+  </style>
+</head>
+
+<body>
+  <div id="map"></div>
+  <h1>Blood Banks Near You !</h1>
+  <ul id="places-list"></ul>
+  <script>
+    function initMap() {
+      // Create a map centered on the user's location
+      navigator.geolocation.getCurrentPosition(function (position) {
+        var userLatLng = {
+          lat: position.coords.latitude,
+          lng: position.coords.longitude
+        };
+        var map = new google.maps.Map(document.getElementById('map'), {
+          center: userLatLng,
+          zoom: 14
+        });
+
+        // Search for nearby blood banks
+        var service = new google.maps.places.PlacesService(map);
+        service.nearbySearch({
+          location: userLatLng,
+          radius: 15000,
+          keyword: 'blood bank'
+        }, function (results, status) {
+          if (status === google.maps.places.PlacesServiceStatus.OK) {
+            // Create a marker and add it to the map for each nearby place
+            for (var i = 0; i < results.length; i++) {
+              var place = results[i];
+              // Retrieve the exact location of the place using the Place details API
+              service.getDetails({
+                placeId: place.place_id
+              }, function (result, status) {
+                if (status === google.maps.places.PlacesServiceStatus.OK) {
+                  // Create a marker for the place
+                  var marker = new google.maps.Marker({
+                    map: map,
+                    position: result.geometry.location
+                  });
+                  // Add an info window with the place's name and address
+                  var infoWindow = new google.maps.InfoWindow({
+                    content: '<h2><b>' + result.name + '</b></h2><p>' + result.formatted_address + '</p><p><b>' + result.formatted_phone_number + '</b></p><p><b>' + (result.opening_hours && result.opening_hours.open_now ? 'Open' : 'Closed') + '</b></p>'
+                  });
+                  marker.addListener('click', function () {
+                    infoWindow.open(map, marker);
+                  });
+                  // Add the place's name and address to the list at the bottom of the page
+                  var placesList = document.getElementById('places-list');
+                  var li = document.createElement('li');
+                  li.innerHTML = '<h2>' + result.name + '</h2><p>' + result.formatted_address + '</p><p><b>' + result.formatted_phone_number + '</p><p><b>' + (result.opening_hours && result.opening_hours.open_now ? 'Open' : 'Closed') + '</p></b>';
+                  placesList.appendChild(li);
+                }
+              });
+            }
+          }
+        });
+      });
+    }
+  </script>
+  <script
+    src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBOkJjxnriUUZurWDcVH6u69JssbWqktMU&libraries=places&callback=initMap"></script>
+</body>
+
+</html>

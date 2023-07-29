@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Voice Bot Chat</title>
+    <link rel="stylesheet" href="/static/css/styles.css">
+    <link rel="stylesheet" href="/static/css/all.css">
+    <link rel="stylesheet" href="/static/css/all.min.css">
+    <link rel="stylesheet" href="/static/css/styles.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=PT+Sans:wght@700&display=swap" rel="stylesheet">
+</head>
+
+<body>
+    
+    <div id="chatbox">
+        <p> V Bot: Hello! How can I assist you today?</p>
+        <div>
+            <input class="input-1" type="text" id="userInput" placeholder="Ask your Queries to VBOT" />
+            <button id="submitButton"><i class="fas fa-paper-plane"></i></button>
+            <button id="microphoneButton"><i class="fas fa-microphone"></i></button>    
+        </div>
+    </div>
+
+
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script>
+        $(document).ready(function () {
+            // Function to append user and bot messages to the chatbox
+            function appendMessage(user, message) {
+                $('#chatbox').append('<p><strong>' + user + ':</strong> ' + message + '</p>');
+                $('#chatbox').scrollTop($('#chatbox')[0].scrollHeight);
+            }
+
+            // Function to speak the bot's response
+            function speakResponse(response) {
+                var synth = window.speechSynthesis;
+                var utterance = new SpeechSynthesisUtterance(response);
+                synth.speak(utterance);
+            }
+
+            // Event handler for submitting the user message
+            $('#submitButton').click(function () {
+                var userInput = $('#userInput').val();
+                appendMessage('You', userInput);
+                $('#userInput').val('');
+
+                // Call the bot_response function to get the bot's reply
+                $.ajax({
+                    url: '/get_bot_response',
+                    method: 'POST',
+                    contentType: 'application/json',
+                    data: JSON.stringify({ message: userInput }),
+                    success: function (response) {
+                        appendMessage('V Bot', response);
+                        speakResponse(response);
+                    }
+                });
+            });
+
+            // Event handler for pressing Enter key
+            $('#userInput').keypress(function (e) {
+                if (e.which == 13) {
+                    $('#submitButton').click();
+                }
+            });
+
+            // Function to handle voice input
+            function handleVoiceInput() {
+                var recognition = new webkitSpeechRecognition();
+                recognition.continuous = false;
+                recognition.interimResults = false;
+                recognition.lang = 'en-US';
+
+                recognition.onresult = function (event) {
+                    var voiceInput = event.results[0][0].transcript;
+                    appendMessage('You', voiceInput);
+
+                    // Call the bot_response function to get the bot's reply
+                    $.ajax({
+                        url: '/get_bot_response',
+                        method: 'POST',
+                        contentType: 'application/json',
+                        data: JSON.stringify({ message: voiceInput }),
+                        success: function (response) {
+                            appendMessage('Bot', response);
+                            speakResponse(response);
+                        }
+                    });
+                };
+
+                recognition.start();
+            }
+
+            // Trigger voice input when the microphone button is clicked
+            $('#microphoneButton').click(function () {
+                handleVoiceInput();
+            });
+        });
+    </script>
+    <script src="/static/js/all.min.js"></script>
+</body>
+
+</html>
